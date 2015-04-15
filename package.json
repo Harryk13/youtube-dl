@@ -1,0 +1,10 @@
+{
+	"name"        : "youtube-dl",
+    "date"        : "2015.04.15",
+	"version"     : "1.0.0",
+	"description" : "get link to download videos from youtube.com",
+	"author": {
+        "name": "Stoian Roman",
+		"email": "stoyan.roman@gmail.com"
+    }
+}
