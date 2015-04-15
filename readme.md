@@ -1,8 +1,8 @@
 youtube-dl - get link to videos from youtube.com
 
 # DESCRIPTION
- **youtube-dl** get link to download videos from youtube.com 
-This use only Java Script without jQuery and pyton program **youtube-dl**.
+ **youtube-dl** get link to download videos from youtube.com . 
+It use only Java Script without jQuery and pyton program youtube-dl.
 
 #EXAMPLE
 
@@ -12,6 +12,7 @@ This use only Java Script without jQuery and pyton program **youtube-dl**.
  * @param {Object} i information
  * @param {Object} [urlObj] best quality from urlMap
  */
+ 
 function onGetMapDone ( e, i, urlObj ) {
 	if ( e ) {
 		console.log(e);
@@ -26,6 +27,7 @@ function onGetMapDone ( e, i, urlObj ) {
  * @param {Object} e error
  * @param {string} url
  */
+ 
 function onGetUrlDone ( e, url ) {
 	if ( e ) {
 		console.log(e);
