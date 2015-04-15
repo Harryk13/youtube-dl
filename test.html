@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+	<meta charset="UTF-8">
+	<title>youtube-dl test</title>
+	<script type="text/javascript" src="js/youtube-dl.js"></script>
+	<script>
+		/**
+		 * callback get information about video
+		 * @param {Object} e error
+		 * @param {Object} i information
+		 * @param {Object} [urlObj] best quality from urlMap
+		 */
+		function onGetMapDone ( e, i, urlObj ) {
+			if ( e ) {
+				console.log(e);
+			} else {
+				console.log(i);
+				urlObj.getUrl(onGetUrlDone);
+			}
+		}
+
+		/**
+		 * callback get video url
+		 * @param {Object} e error
+		 * @param {string} url
+		 */
+		function onGetUrlDone ( e, url ) {
+			if ( e ) {
+				console.log(e);
+			} else {
+				console.log(url);
+			}
+		}
+
+		YoutubeDL.getInfo('https://www.youtube.com/watch?v=w8t9VK-5vt8', onGetMapDone);
+	</script>
+</head>
+<body>
+
+</body>
+</html>
