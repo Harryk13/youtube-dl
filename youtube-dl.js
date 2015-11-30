@@ -847,6 +847,9 @@ window.YoutubeDL = (function () {
 				continue;
 			}
 			tempNumber = /itag\/(\d+?)\//.exec(tempArr[i]);
+			if ( tempNumber && tempNumber.length >= 2 ) {
+				tempNumber = tempNumber[1];
+			}
 			if ( tempNumber in formats ) {
 				tempObj = Object.create(urlDefObj, {
 					format: {value: formats[tempNumber]},
