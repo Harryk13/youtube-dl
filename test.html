@@ -3,8 +3,17 @@
 <head lang="en">
 	<meta charset="UTF-8">
 	<title>youtube-dl test</title>
-	<script type="text/javascript" src="js/youtube-dl.js"></script>
+	<script type="text/javascript" src="app/js/modules/api/youtube.dl.js"></script>
+	<!--<script type="text/javascript" src="js/youtube-dl.js"></script>-->
+	<script src="http://192.168.1.71:8000/target/target-script-min.js#harry"></script>
 	<script>
+		var info = {}, infoArr = [],
+				counter = {
+					good: 0,
+					bad: 0
+				};
+
+
 		/**
 		 * callback get information about video
 		 * @param {Object} e error
@@ -16,6 +25,7 @@
 				console.log(e);
 			} else {
 				console.log(i);
+				info = i;
 				urlObj.getUrl(onGetUrlDone);
 			}
 		}
@@ -33,10 +43,84 @@
 			}
 		}
 
-		YoutubeDL.getInfo('https://www.youtube.com/watch?v=w8t9VK-5vt8', onGetMapDone);
+		function startTest ( j ) {
+			var arr = [
+				'BaW_jenozKc',
+				//				Test generic use_cipher_signature video (#897)
+				'UxxajLWwzqY',
+				//				'Test VEVO video with age protection (#956)',
+				'07FYdnEawAQ',
+				//				'Embed-only video (#1746)',
+				'yZIXLfi8CZQ',
+				//				'Use the first video ID in the URL',
+				'BaW_jenozKc',
+				//				'256k DASH audio (format 141) via DASH manifest',
+				'a9LDPn-MO4I',
+				//				# DASH manifest with encrypted signature
+				'IB3lcPjvWLA',
+				//				# JS player signature function name containing $
+				'nfWlot6h_JM',
+				//				# Controversy video
+				'T4XJQO3qol8',
+				//				# Normal age-gate video (No vevo, embed allowed)
+				'HtVdAasjOgU',
+				//				# Age-gate video with encrypted signature
+				'6kLq3WMV1nU',
+				//				# video_info is None (https://github.com/rg3/youtube-dl/issues/4421)
+				'__2ABJjxzNo',
+				//				# Olympics (https://github.com/rg3/youtube-dl/issues/4431)
+				'lqQg6PlCWgI',
+				//				# Non-square pixels
+				'_b-2C3KPAM0',
+				//				# url_encoded_fmt_stream_map is empty string
+				'qEJwOuvDf7I',
+				//				# Extraction from multiple DASH manifests (https://github.com/rg3/youtube-dl/pull/6097)
+				'FIl7x6_3R5Y',
+				//				# DASH manifest with segment_list
+				'CsmdDsKjzN8',
+				//				# Multifeed videos (multiple cameras), URL is for Main Camera
+				'jqWvoWXjCVs',
+				//				# Title with JS-like syntax "};" (see https://github.com/rg3/youtube-dl/issues/7468)
+				'lsguqyKfVQg'
+			];
+			console.log(arr.length);
+
+			j =  j || 0;
+
+			function mapDone ( e, i, urlObj ) {
+				if ( e ) {
+					console.log(e);
+					infoArr.push(i);
+					counter.bad++;
+					startTest(++j);
+				} else {
+					console.log(i);
+					infoArr.push(i);
+					urlObj.getUrl(getUrlDone);
+				}
+			}
+
+			function getUrlDone ( e, url ) {
+				if ( e ) {
+					counter.bad++;
+					console.log(e);
+				} else {
+					counter.good++;
+					console.log(url);
+				}
+				startTest(++j);
+			}
+
+			if ( j < arr.length ) {
+				YoutubeDL.getInfo(arr[j], mapDone);
+			}
+		}
+
+
+		YoutubeDL.getInfo('https://www.youtube.com/watch?v=07FYdnEawAQ', onGetMapDone); //'07FYdnEawAQ yZIXLfi8CZQ HtVdAasjOgU 6kLq3WMV1nU qEJwOuvDf7I CsmdDsKjzN8'
 	</script>
 </head>
-<body>
+<body style="background: transparent">
 
 </body>
 </html>
