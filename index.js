@@ -2,8 +2,7 @@
  * Created by Harry on 26.03.2015.
  */
 
-//var yd = require('youtube-dl');
-//'use strict';
+'use strict';
 
 /*eslint-disable camelcase*/
 
@@ -19,6 +18,18 @@ var urlDefObj = {
 		isLive: false,
 		getUrl: getUrlFromObj
 	},
+	defaults = {
+		method: 'GET',  // HTTP method to use, such as "GET", "POST", "PUT", "DELETE", etc.
+		async: true,   // whether or not to perform the operation asynchronously
+		headers: {},     // list of HTTP request headers
+		type: 'text', // "", "arraybuffer", "blob", "document", "json", "text"
+		data: null,   // data to send (plain object)
+		timeout: 30000,  // amount of milliseconds a request can take before being terminated
+		onload: null,   // callback when the request has successfully completed
+		onerror: null,   // callback when the request has failed
+		ontimeout: null    // callback when the author specified timeout has passed before the request could complete
+	},
+	defaultsKeys = Object.keys(defaults),
 	getInfoCallback = null,
 	getUrlCallback = null,
 //in python library it is _formats array
@@ -61,54 +72,54 @@ var urlDefObj = {
 		151: {ext: 'mp4', height: 72, formatNote: 'HLS', preference: -10},
 
 		////DASH mp4 video
-		'133': {'ext': 'mp4', 'height': 240, 'format_note': 'DASH video', 'acodec': 'none', 'preference': -40},
-		'134': {'ext': 'mp4', 'height': 360, 'format_note': 'DASH video', 'acodec': 'none', 'preference': -40},
-		'135': {'ext': 'mp4', 'height': 480, 'format_note': 'DASH video', 'acodec': 'none', 'preference': -40},
-		'136': {'ext': 'mp4', 'height': 720, 'format_note': 'DASH video', 'acodec': 'none', 'preference': -40},
-		'137': {'ext': 'mp4', 'height': 1080, 'format_note': 'DASH video', 'acodec': 'none', 'preference': -40},
-		'138': {'ext': 'mp4', 'format_note': 'DASH video', 'acodec': 'none', 'preference': -40}, // # Height can vary (https://github.com/rg3/youtube-dl/issues/4559)
-		'160': {'ext': 'mp4', 'height': 144, 'format_note': 'DASH video', 'acodec': 'none', 'preference': -40},
-		'264': {'ext': 'mp4', 'height': 1440, 'format_note': 'DASH video', 'acodec': 'none', 'preference': -40},
-		'298': {'ext': 'mp4', 'height': 720, 'format_note': 'DASH video', 'acodec': 'none', 'preference': -40, 'fps': 60, 'vcodec': 'h264'},
-		'299': {'ext': 'mp4', 'height': 1080, 'format_note': 'DASH video', 'acodec': 'none', 'preference': -40, 'fps': 60, 'vcodec': 'h264'},
-		'266': {'ext': 'mp4', 'height': 2160, 'format_note': 'DASH video', 'acodec': 'none', 'preference': -40, 'vcodec': 'h264'},
+		'133': {'ext': 'mp4', 'height': 240, 'format_note': 'DASH video', 'acodec': false, 'preference': -40},
+		'134': {'ext': 'mp4', 'height': 360, 'format_note': 'DASH video', 'acodec': false, 'preference': -40},
+		'135': {'ext': 'mp4', 'height': 480, 'format_note': 'DASH video', 'acodec': false, 'preference': -40},
+		'136': {'ext': 'mp4', 'height': 720, 'format_note': 'DASH video', 'acodec': false, 'preference': -40},
+		'137': {'ext': 'mp4', 'height': 1080, 'format_note': 'DASH video', 'acodec': false, 'preference': -40},
+		'138': {'ext': 'mp4', 'format_note': 'DASH video', 'acodec': false, 'preference': -40}, // # Height can vary (https://github.com/rg3/youtube-dl/issues/4559)
+		'160': {'ext': 'mp4', 'height': 144, 'format_note': 'DASH video', 'acodec': false, 'preference': -40},
+		'264': {'ext': 'mp4', 'height': 1440, 'format_note': 'DASH video', 'acodec': false, 'preference': -40},
+		'298': {'ext': 'mp4', 'height': 720, 'format_note': 'DASH video', 'acodec': false, 'preference': -40, 'fps': 60, 'vcodec': 'h264'},
+		'299': {'ext': 'mp4', 'height': 1080, 'format_note': 'DASH video', 'acodec': false, 'preference': -40, 'fps': 60, 'vcodec': 'h264'},
+		'266': {'ext': 'mp4', 'height': 2160, 'format_note': 'DASH video', 'acodec': false, 'preference': -40, 'vcodec': 'h264'},
 		//
 		//		 	//Dash mp4 audio
-		//			'139': {'ext': 'm4a', 'format_note': 'DASH audio', 'acodec': 'aac', 'vcodec': 'none', 'abr': 48, 'preference': -50, 'container': 'm4a_dash'},
-		//			'140': {'ext': 'm4a', 'format_note': 'DASH audio', 'acodec': 'aac', 'vcodec': 'none', 'abr': 128, 'preference': -50, 'container': 'm4a_dash'},
-		//			'141': {'ext': 'm4a', 'format_note': 'DASH audio', 'acodec': 'aac', 'vcodec': 'none', 'abr': 256, 'preference': -50, 'container': 'm4a_dash'},
+		//			'139': {'ext': 'm4a', 'format_note': 'DASH audio', 'acodec': 'aac', 'vcodec': false, 'abr': 48, 'preference': -50, 'container': 'm4a_dash'},
+		//			'140': {'ext': 'm4a', 'format_note': 'DASH audio', 'acodec': 'aac', 'vcodec': false, 'abr': 128, 'preference': -50, 'container': 'm4a_dash'},
+		//			'141': {'ext': 'm4a', 'format_note': 'DASH audio', 'acodec': 'aac', 'vcodec': false, 'abr': 256, 'preference': -50, 'container': 'm4a_dash'},
 		//
 		//			//Dash webm
-		'167': {'ext': 'webm', 'height': 360, 'width': 640, 'format_note': 'DASH video', 'acodec': 'none', 'container': 'webm', 'vcodec': 'VP8', 'preference': -40},
-		'168': {'ext': 'webm', 'height': 480, 'width': 854, 'format_note': 'DASH video', 'acodec': 'none', 'container': 'webm', 'vcodec': 'VP8', 'preference': -40},
-		'169': {'ext': 'webm', 'height': 720, 'width': 1280, 'format_note': 'DASH video', 'acodec': 'none', 'container': 'webm', 'vcodec': 'VP8', 'preference': -40},
-		'170': {'ext': 'webm', 'height': 1080, 'width': 1920, 'format_note': 'DASH video', 'acodec': 'none', 'container': 'webm', 'vcodec': 'VP8', 'preference': -40},
-		'218': {'ext': 'webm', 'height': 480, 'width': 854, 'format_note': 'DASH video', 'acodec': 'none', 'container': 'webm', 'vcodec': 'VP8', 'preference': -40},
-		'219': {'ext': 'webm', 'height': 480, 'width': 854, 'format_note': 'DASH video', 'acodec': 'none', 'container': 'webm', 'vcodec': 'VP8', 'preference': -40},
-		'278': {'ext': 'webm', 'height': 144, 'format_note': 'DASH video', 'acodec': 'none', 'preference': -40, 'container': 'webm', 'vcodec': 'VP9'},
-		'242': {'ext': 'webm', 'height': 240, 'format_note': 'DASH video', 'acodec': 'none', 'preference': -40},
-		'243': {'ext': 'webm', 'height': 360, 'format_note': 'DASH video', 'acodec': 'none', 'preference': -40},
-		'244': {'ext': 'webm', 'height': 480, 'format_note': 'DASH video', 'acodec': 'none', 'preference': -40},
-		'245': {'ext': 'webm', 'height': 480, 'format_note': 'DASH video', 'acodec': 'none', 'preference': -40},
-		'246': {'ext': 'webm', 'height': 480, 'format_note': 'DASH video', 'acodec': 'none', 'preference': -40},
-		'247': {'ext': 'webm', 'height': 720, 'format_note': 'DASH video', 'acodec': 'none', 'preference': -40},
-		'248': {'ext': 'webm', 'height': 1080, 'format_note': 'DASH video', 'acodec': 'none', 'preference': -40},
-		'271': {'ext': 'webm', 'height': 1440, 'format_note': 'DASH video', 'acodec': 'none', 'preference': -40},
-		'272': {'ext': 'webm', 'height': 2160, 'format_note': 'DASH video', 'acodec': 'none', 'preference': -40},
-		'302': {'ext': 'webm', 'height': 720, 'format_note': 'DASH video', 'acodec': 'none', 'preference': -40, 'fps': 60, 'vcodec': 'VP9'},
-		'303': {'ext': 'webm', 'height': 1080, 'format_note': 'DASH video', 'acodec': 'none', 'preference': -40, 'fps': 60, 'vcodec': 'VP9'},
-		'308': {'ext': 'webm', 'height': 1440, 'format_note': 'DASH video', 'acodec': 'none', 'preference': -40, 'fps': 60, 'vcodec': 'VP9'},
-		'313': {'ext': 'webm', 'height': 2160, 'format_note': 'DASH video', 'acodec': 'none', 'preference': -40, 'vcodec': 'VP9'},
-		'315': {'ext': 'webm', 'height': 2160, 'format_note': 'DASH video', 'acodec': 'none', 'preference': -40, 'fps': 60, 'vcodec': 'VP9'},
+		'167': {'ext': 'webm', 'height': 360, 'width': 640, 'format_note': 'DASH video', 'acodec': false, 'container': 'webm', 'vcodec': 'VP8', 'preference': -40},
+		'168': {'ext': 'webm', 'height': 480, 'width': 854, 'format_note': 'DASH video', 'acodec': false, 'container': 'webm', 'vcodec': 'VP8', 'preference': -40},
+		'169': {'ext': 'webm', 'height': 720, 'width': 1280, 'format_note': 'DASH video', 'acodec': false, 'container': 'webm', 'vcodec': 'VP8', 'preference': -40},
+		'170': {'ext': 'webm', 'height': 1080, 'width': 1920, 'format_note': 'DASH video', 'acodec': false, 'container': 'webm', 'vcodec': 'VP8', 'preference': -40},
+		'218': {'ext': 'webm', 'height': 480, 'width': 854, 'format_note': 'DASH video', 'acodec': false, 'container': 'webm', 'vcodec': 'VP8', 'preference': -40},
+		'219': {'ext': 'webm', 'height': 480, 'width': 854, 'format_note': 'DASH video', 'acodec': false, 'container': 'webm', 'vcodec': 'VP8', 'preference': -40},
+		'278': {'ext': 'webm', 'height': 144, 'format_note': 'DASH video', 'acodec': false, 'preference': -40, 'container': 'webm', 'vcodec': 'VP9'},
+		'242': {'ext': 'webm', 'height': 240, 'format_note': 'DASH video', 'acodec': false, 'preference': -40},
+		'243': {'ext': 'webm', 'height': 360, 'format_note': 'DASH video', 'acodec': false, 'preference': -40},
+		'244': {'ext': 'webm', 'height': 480, 'format_note': 'DASH video', 'acodec': false, 'preference': -40},
+		'245': {'ext': 'webm', 'height': 480, 'format_note': 'DASH video', 'acodec': false, 'preference': -40},
+		'246': {'ext': 'webm', 'height': 480, 'format_note': 'DASH video', 'acodec': false, 'preference': -40},
+		'247': {'ext': 'webm', 'height': 720, 'format_note': 'DASH video', 'acodec': false, 'preference': -40},
+		'248': {'ext': 'webm', 'height': 1080, 'format_note': 'DASH video', 'acodec': false, 'preference': -40},
+		'271': {'ext': 'webm', 'height': 1440, 'format_note': 'DASH video', 'acodec': false, 'preference': -40},
+		'272': {'ext': 'webm', 'height': 2160, 'format_note': 'DASH video', 'acodec': false, 'preference': -40},
+		'302': {'ext': 'webm', 'height': 720, 'format_note': 'DASH video', 'acodec': false, 'preference': -40, 'fps': 60, 'vcodec': 'VP9'},
+		'303': {'ext': 'webm', 'height': 1080, 'format_note': 'DASH video', 'acodec': false, 'preference': -40, 'fps': 60, 'vcodec': 'VP9'},
+		'308': {'ext': 'webm', 'height': 1440, 'format_note': 'DASH video', 'acodec': false, 'preference': -40, 'fps': 60, 'vcodec': 'VP9'},
+		'313': {'ext': 'webm', 'height': 2160, 'format_note': 'DASH video', 'acodec': false, 'preference': -40, 'vcodec': 'VP9'},
+		'315': {'ext': 'webm', 'height': 2160, 'format_note': 'DASH video', 'acodec': false, 'preference': -40, 'fps': 60, 'vcodec': 'VP9'},
 		//
 		//			//Dash webm audio
-		//			'171': {'ext': 'webm', 'vcodec': 'none', 'format_note': 'DASH audio', 'abr': 128, 'preference': -50},
-		//			'172': {'ext': 'webm', 'vcodec': 'none', 'format_note': 'DASH audio', 'abr': 256, 'preference': -50},
+		//			'171': {'ext': 'webm', 'vcodec': false, 'format_note': 'DASH audio', 'abr': 128, 'preference': -50},
+		//			'172': {'ext': 'webm', 'vcodec': false, 'format_note': 'DASH audio', 'abr': 256, 'preference': -50},
 		//
 		//			//Dash webm audio with opus inside
-		//			'249': {'ext': 'webm', 'vcodec': 'none', 'format_note': 'DASH audio', 'acodec': 'opus', 'abr': 50, 'preference': -50},
-		//			'250': {'ext': 'webm', 'vcodec': 'none', 'format_note': 'DASH audio', 'acodec': 'opus', 'abr': 70, 'preference': -50},
-		//			'251': {'ext': 'webm', 'vcodec': 'none', 'format_note': 'DASH audio', 'acodec': 'opus', 'abr': 160, 'preference': -50},
+		//			'249': {'ext': 'webm', 'vcodec': false, 'format_note': 'DASH audio', 'acodec': 'opus', 'abr': 50, 'preference': -50},
+		//			'250': {'ext': 'webm', 'vcodec': false, 'format_note': 'DASH audio', 'acodec': 'opus', 'abr': 70, 'preference': -50},
+		//			'251': {'ext': 'webm', 'vcodec': false, 'format_note': 'DASH audio', 'acodec': 'opus', 'abr': 160, 'preference': -50},
 
 		//conn (unnamed)
 		conn: {protocol: 'conn'},
@@ -158,53 +169,61 @@ function urlToObj ( url ) {
 }
 
 /**
- * Ajax request
- * @param {string} method "post", "get" or "head"
+ * Method to send ajax requests.
+ *
  * @param {string} url address
- * @param {Function} callback on
- * @param {Object} [headers] list of optional headers like "charset", "Content-Type" and so on
- * @param {string} [type=text] data parsing mode: plain text (default), xml, json
- * @return {XMLHttpRequest} request object in case response headers are necessary
- * @example
- *   ajax('get', 'https://google.com/', function(data, status){console.info(data, status);}, {charset:'utf-8'})
+ * @param {Object} options Plain object with call parameters
+ * @return {XMLHttpRequest|Boolean} false in case of wrong params
  */
-function ajax ( method, url, callback, headers, type ) {
-	var hname,
-		jdata = null,
-		timeout = null,
-		xhr = new XMLHttpRequest();
+function ajax ( url, options ) {
+	var i, headersKeys, client;
 
-	xhr.onreadystatechange = function () {
-		if (xhr.readyState === 4) {
-			clearTimeout(timeout);
-			if (type === 'json') {
-				try {
-					jdata = JSON.parse(xhr.responseText);
-				} catch (e) {
-					jdata = null;
+	// init
+	options = options || {};
+	// valid non-empty string
+	if ( url && (typeof url === 'string' || url instanceof String) && url.length > 0 ) {
+		// plain object is given as param
+		if ( options && typeof options === 'object' ) {
+			// extend with default options
+			for (i = 0; i < defaultsKeys.length; i++) {
+				// in case not redefined
+				if ( options[defaultsKeys[i]] === undefined ) {
+					options[defaultsKeys[i]] = defaults[defaultsKeys[i]];
 				}
-			} else {
-				jdata = xhr.responseText;
-			}
-			if ( typeof callback === 'function' ) {
-				callback(type === 'xml' ? xhr.responseXML : jdata, xhr.status);
 			}
 		}
-	};
-	xhr.open(method, url, true);
-	if ( headers ) {
-		for ( hname in headers ) {
-			if ( headers.hasOwnProperty(hname) ) {
-				xhr.setRequestHeader(hname, headers[hname]);
+
+		client = new XMLHttpRequest();
+		// init a request
+		client.open(options.method, url, options.async);
+
+		// apply the given headers
+		if ( options.headers && typeof options.headers === 'object' ) {
+			headersKeys = Object.keys(options.headers);
+			for ( i = 0; i < headersKeys.length; i++ ) {
+				client.setRequestHeader(headersKeys[i], options.headers[headersKeys[i]]);
 			}
 		}
+
+		// set response type and timeout
+		client.responseType = options.type;
+		client.timeout = options.timeout;
+
+		// callbacks
+		if ( options.onload && typeof options.onload === 'function' ) {
+			client.onload = function () {
+				options.onload.call(this, this.response || this.responseText, this.status);
+			};
+		}
+		client.onerror = options.onerror;
+		client.ontimeout = options.ontimeout;
+
+		// actual request
+		client.send(options.data ? options.data : null);
+
+		return client;
 	}
-	xhr.send();
-	// abort after some time (30s)
-	timeout = setTimeout(function () {
-		xhr.abort();
-	}, 60000);
-	return xhr;
+	return false;
 }
 
 /**
@@ -268,7 +287,7 @@ function getUrls ( id ) {
 	clear();
 	info.videoId = id;
 	url = 'https://www.youtube.com/watch?v=' + info.videoId + '&gl=US&hl=en&has_verified=1&bpctr=9999999999';
-	ajax('GET', url, parseUrls, null, null);
+	ajax(url, {onload: parseUrls});
 }
 
 /**
@@ -292,7 +311,7 @@ function parseUrls ( responseText ) {
 
 	if ( responseText.search(regExp) !== -1 ) {
 		info.ageGate = true;
-		ajax('GET', 'https://www.youtube.com/embed/' + info.videoId, parseAgeGate, null, null);
+		ajax('https://www.youtube.com/embed/' + info.videoId, {onload: parseAgeGate});
 		return null;
 	}
 	info.ageGate = false;
@@ -365,9 +384,9 @@ function parseAgeGate ( responseText ) {
 		regExp = /sts":\s*(\d+)/;
 		matchObject = regExp.exec(responseText);
 		url = 'https://www.youtube.com/get_video_info?eurl=' + urlTemp + '&sts=' + matchObject[1] + '&video_id=' + info.videoId;
-		ajax('GET', url, function( unsw ) {
+		ajax(url, {onload: function( unsw ) {
 			parseInfoAge(unsw, responseText);
-		}, null, null);
+		}});
 	} catch (e) {
 		info.error = {};
 		info.error.message = e.message;
@@ -381,6 +400,7 @@ function parseAgeGate ( responseText ) {
 /**
  * parse age_gate pages
  * @param {string} responseText answer result
+ * @param {string} embedPage answer result
  */
 function parseInfoAge ( responseText, embedPage ) {
 	var s1 = responseText.split(';'),
@@ -478,7 +498,9 @@ function getDash ( i ) {
 
 	i = i || 0;
 	if ( i < arr.length ) {
-		ajax('GET', 'https://www.youtube.com/get_video_info?&video_id=' + info.videoId + arr[i] + '&ps=default&eurl=&gl=US&hl=en', function ( responseText ) {getDashLoad(responseText, i);}, null, null);
+		ajax('https://www.youtube.com/get_video_info?&video_id=' + info.videoId + arr[i] + '&ps=default&eurl=&gl=US&hl=en', {onload: function ( responseText ) {
+			getDashLoad(responseText, i);
+		}});
 	} else if ( dashArr.length === 0 ) {
 		info.error = {};
 		info.error.message = '"token" parameter not in video info for unknown reason and no dash';
@@ -828,9 +850,9 @@ function getPlayerInfo ( responseText, videoInfo, embedPage ) {
 	}
 
 	if ( videoInfo.hlsvp ) {
-		ajax('GET', decodeURIComponent(videoInfo.hlsvp), function ( unsw ) {
+		ajax(decodeURIComponent(videoInfo.hlsvp), {onload: function ( unsw ) {
 			parsseM3U(unsw);
-		});
+		}});
 		return;
 	}
 }
@@ -942,7 +964,7 @@ function getSig ( obj ) {
 		}
 		if (matchObject[2] === 'js') {
 			if ( parseSig !== false ) {
-				ajax('GET', playerUrl, getSigParseJS);
+				ajax(playerUrl, {onload: getSigParseJS});
 				return true;
 			} else {
 				obj.error = {};
@@ -972,20 +994,22 @@ function getSig ( obj ) {
 	}
 
 	function getSigParseJS ( responseText ) {
-		var jsplayer;
+		var jsplayer, func;
 
 		regExp = /\.sig\|\|([a-zA-Z0-9$]+)\(/;
 		matchObject = regExp.exec(responseText);
-		//responseText = responseText.replace('navigator', 'window.navigator');
 		responseText = responseText.replace(/}\)\(\);$/m, '');
 		try {
 			//responseText = '(function(){' + responseText;
-			responseText += 'return ' + matchObject[1] + '("' + obj.sig + '");})()';
-			//responseText = responseText.replace(/[^.](navigator)/g,'window.navigator');
+			//responseText += 'return ' + matchObject[1] + '("' + obj.sig + '");})()';
+			responseText += 'return ' + matchObject[1] + '("' + obj.sig + '");} func1.call(window,{});';
+			responseText = responseText.replace('var _yt_player={};(function', 'var _yt_player={};function func1');
 			//console.log(responseText);
 			/*eslint-disable no-eval */
 			//var navigator = window.navigator;navigator.platform = "Linux sh4";
 			jsplayer = eval(responseText);
+			//func = eval(responseText);
+			//jsplayer = func.call(window, {});
 			/*eslint-enable no-eval */
 		} catch (e) {
 			obj.error = {};

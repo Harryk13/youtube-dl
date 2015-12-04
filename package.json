@@ -1,14 +1,16 @@
 {
-	"name"        : "youtube-dl",
-	"version"     : "1.2.0",
-	"description" : "get link to download videos from youtube.com",
-	"author": {
-        "name": "Stoian Roman",
-		"email": "stoyan.roman@gmail.com"
-    },
-	"dependencies": {
-	  "commander": "2.*.*",
-	  "debug": "^2.*.*",
-	  "mocha": "^2.*.*"
-	}
+  "name": "youtube-dl",
+  "version": "1.2.0",
+  "description": "get link to download videos from youtube.com",
+  "author": {
+    "name": "Stoian Roman",
+    "email": "stoyan.roman@gmail.com"
+  },
+  "dependencies": {
+    "commander": "2.*.*",
+    "debug": "^2.*.*",
+    "mocha": "^2.*.*",
+    "mock-browser": "^0.91.34",
+    "xmlhttprequest": "*"
+  }
 }
