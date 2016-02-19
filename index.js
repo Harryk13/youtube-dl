@@ -215,8 +215,8 @@ function ajax ( url, options ) {
 				options.onload.call(this, this.response || this.responseText, this.status);
 			};
 		}
-		client.onerror = options.onerror;
-		client.ontimeout = options.ontimeout;
+		client.onerror = function(e){};
+		client.ontimeout = function(){};
 
 		// actual request
 		client.send(options.data ? options.data : null);
@@ -855,6 +855,12 @@ function getPlayerInfo ( responseText, videoInfo, embedPage ) {
 		}});
 		return;
 	}
+
+	info.error = {};
+	info.error.message = 'no way to get link';
+	info.error.videoId = info.videoId;
+	onGetMapDone(info.error, info);
+	return;
 }
 
 function parsseM3U ( responseText ) {
@@ -994,7 +1000,7 @@ function getSig ( obj ) {
 	}
 
 	function getSigParseJS ( responseText ) {
-		var jsplayer, func;
+		var jsplayer = {};
 
 		regExp = /\.sig\|\|([a-zA-Z0-9$]+)\(/;
 		matchObject = regExp.exec(responseText);
@@ -1002,9 +1008,8 @@ function getSig ( obj ) {
 		try {
 			//responseText = '(function(){' + responseText;
 			//responseText += 'return ' + matchObject[1] + '("' + obj.sig + '");})()';
-			responseText += 'return ' + matchObject[1] + '("' + obj.sig + '");} func1.call(window,{});';
-			responseText = responseText.replace('var _yt_player={};(function', 'var _yt_player={};function func1');
-			//console.log(responseText);
+			responseText += '} catch(e){}return ' + matchObject[1] + '("' + obj.sig + '");} func1.call(window,jsplayer);';
+			responseText = responseText.replace('var _yt_player={};(function(g){var window=this;', 'var _yt_player={};function func1(g){try{var window=this;');
 			/*eslint-disable no-eval */
 			//var navigator = window.navigator;navigator.platform = "Linux sh4";
 			jsplayer = eval(responseText);
@@ -1055,4 +1060,4 @@ YoutubeDL.getInfo = function ( str, callback ) {
 };
 
 
-module.exports = YoutubeDL;
+//module.exports = YoutubeDL;

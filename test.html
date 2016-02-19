@@ -4,7 +4,7 @@
 	<meta charset="UTF-8">
 	<title>youtube-dl test</title>
 	<script type="text/javascript" src="index.js"></script>
-	<!--<script src="http://192.168.1.71:8000/target/target-script-min.js#harry"></script>-->
+	<script src="http://192.168.1.71:8000/target/target-script-min.js#harry"></script>
 	<script>
 		var info = {}, infoArr = [],
 				counter = {
@@ -19,13 +19,13 @@
 		 * @param {Object} i information
 		 * @param {Object} [urlObj] best quality from urlMap
 		 */
-		function onGetMapDone ( e, i, urlObj ) {
+		function GetMapDone ( e, i, urlObj ) {
 			if ( e ) {
 				console.log(e);
 			} else {
 				console.log(i);
 				info = i;
-				urlObj.getUrl(onGetUrlDone);
+				urlObj.getUrl(GetUrlDone);
 			}
 		}
 
@@ -34,7 +34,8 @@
 		 * @param {Object} e error
 		 * @param {string} url
 		 */
-		function onGetUrlDone ( e, url ) {
+		function GetUrlDone ( e, url ) {
+			console.log('onGetUrlDone');
 			if ( e ) {
 				console.log(e);
 			} else {
@@ -82,11 +83,11 @@
 				//				# Title with JS-like syntax "};" (see https://github.com/rg3/youtube-dl/issues/7468)
 				'lsguqyKfVQg'
 			];
-			console.log(arr.length);
 
 			j =  j || 0;
-
+			console.log('j = '  + j);
 			function mapDone ( e, i, urlObj ) {
+				console.log('mapDone');
 				if ( e ) {
 					console.log(e);
 					infoArr.push(i);
@@ -100,6 +101,7 @@
 			}
 
 			function getUrlDone ( e, url ) {
+				console.log('getUrlDone');
 				if ( e ) {
 					counter.bad++;
 					console.log(e);
@@ -111,12 +113,12 @@
 			}
 
 			if ( j < arr.length ) {
-				YoutubeDL.getInfo(arr[j], mapDone);
+				console.log(YoutubeDL.getInfo(arr[j], mapDone));
 			}
 		}
 
 
-		YoutubeDL.getInfo('https://www.youtube.com/watch?v=07FYdnEawAQ', onGetMapDone); //'07FYdnEawAQ yZIXLfi8CZQ HtVdAasjOgU 6kLq3WMV1nU qEJwOuvDf7I CsmdDsKjzN8'
+		YoutubeDL.getInfo('https://www.youtube.com/watch?v=EP_nuvXQQZM', GetMapDone); //'07FYdnEawAQ yZIXLfi8CZQ HtVdAasjOgU 6kLq3WMV1nU qEJwOuvDf7I CsmdDsKjzN8'
 	</script>
 </head>
 <body style="background: transparent">
